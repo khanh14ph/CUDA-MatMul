@@ -1,1 +1,0 @@
-ncu --metrics smsp__inst_executed_pipe_lsu.sum,smsp__inst_executed_pipe_fma.sum,smsp__inst_executed_pipe_alu.sum ./main

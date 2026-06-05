@@ -2,7 +2,7 @@
 #include "utils.cuh"
 
 template <typename T>
-__global__ void gemm_v00(size_t m, size_t n, size_t k, T alpha, T const* A,
+__global__ void gemm_v0(size_t m, size_t n, size_t k, T alpha, T const* A,
                          size_t lda, T const* B, size_t ldb, T beta, T* C,
                          size_t ldc)
 {
@@ -22,7 +22,7 @@ __global__ void gemm_v00(size_t m, size_t n, size_t k, T alpha, T const* A,
 }
 
 template <typename T>
-void launch_gemm_kernel_v00(size_t m, size_t n, size_t k, T const* alpha,
+void launch_gemm_kernel_v0(size_t m, size_t n, size_t k, T const* alpha,
                             T const* A, size_t lda, T const* B, size_t ldb,
                             T const* beta, T* C, size_t ldc,
                             cudaStream_t stream)
@@ -32,11 +32,11 @@ void launch_gemm_kernel_v00(size_t m, size_t n, size_t k, T const* alpha,
         (static_cast<unsigned int>(m) + block_dim.x - 1U) / block_dim.x,
         (static_cast<unsigned int>(n) + block_dim.y - 1U) / block_dim.y, 1U};
     
-    gemm_v00<T><<<grid_dim, block_dim, 0U, stream>>>(m, n, k, *alpha, A, lda, B,
+    gemm_v0<T><<<grid_dim, block_dim, 0U, stream>>>(m, n, k, *alpha, A, lda, B,
                                                      ldb, *beta, C, ldc);
     CHECK_LAST_CUDA_ERROR();
 }
 
 // Explicit template instantiation for the types you intend to use
-template void launch_gemm_kernel_v00<float>(size_t, size_t, size_t, float const*, float const*, size_t, float const*, size_t, float const*, float*, size_t, cudaStream_t);
-template void launch_gemm_kernel_v00<double>(size_t, size_t, size_t, double const*, double const*, size_t, double const*, size_t, double const*, double*, size_t, cudaStream_t);
+template void launch_gemm_kernel_v0<float>(size_t, size_t, size_t, float const*, float const*, size_t, float const*, size_t, float const*, float*, size_t, cudaStream_t);
+template void launch_gemm_kernel_v0<double>(size_t, size_t, size_t, double const*, double const*, size_t, double const*, size_t, double const*, double*, size_t, cudaStream_t);

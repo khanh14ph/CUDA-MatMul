@@ -1,0 +1,1 @@
+-I/scratch/midway3/khanhnd/CUDA/include -isystem "/software/cuda-11.7-el8-x86_64/targets/x86_64-linux/include"

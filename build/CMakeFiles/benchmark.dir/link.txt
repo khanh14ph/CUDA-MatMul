@@ -1,0 +1,1 @@
+/usr/bin/g++ @CMakeFiles/benchmark.dir/objects1.rsp -o benchmark @CMakeFiles/benchmark.dir/linkLibs.rsp -L"/software/cuda-11.7-el8-x86_64/targets/x86_64-linux/lib/stubs" -L"/software/cuda-11.7-el8-x86_64/targets/x86_64-linux/lib"

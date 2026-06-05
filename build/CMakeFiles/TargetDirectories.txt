@@ -1,0 +1,3 @@
+/scratch/midway3/khanhnd/CUDA/build/CMakeFiles/benchmark.dir
+/scratch/midway3/khanhnd/CUDA/build/CMakeFiles/edit_cache.dir
+/scratch/midway3/khanhnd/CUDA/build/CMakeFiles/rebuild_cache.dir

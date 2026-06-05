@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/scratch/midway3/khanhnd/CUDA/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

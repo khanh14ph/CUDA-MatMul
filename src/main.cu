@@ -94,9 +94,9 @@ int main() {
     std::cout << "Running CPU Reference...\n";
     cpu_gemm(m, n, k, alpha, h_A.data(), k, h_B.data(), n, beta, h_C_cpu_ref.data(), n);
 
-    std::cout << "Verifying V00 Kernel correctness...\n";
+    std::cout << "Verifying V0 Kernel correctness...\n";
     CHECK_CUDA(cudaMemset(d_C, 0, m * n * sizeof(T))); 
-    launch_gemm_kernel_v00(m, n, k, &alpha, d_A, k, d_B, n, &beta, d_C, n, nullptr);
+    launch_gemm_kernel_v0(m, n, k, &alpha, d_A, k, d_B, n, &beta, d_C, n, nullptr);
     CHECK_CUDA(cudaDeviceSynchronize());
     CHECK_CUDA(cudaMemcpy(h_C_gpu_res.data(), d_C, m * n * sizeof(T), cudaMemcpyDeviceToHost));
     
@@ -119,7 +119,7 @@ int main() {
     std::cout << "M=" << m << " N=" << n << " K=" << k << "\n";
     std::cout << "--------------------------------------------------------\n";
     
-    benchmark_kernel(launch_gemm_kernel_v00<T>, "gemm_v00 (Naive)", m, n, k, alpha, beta, d_A, d_B, d_C);
+    benchmark_kernel(launch_gemm_kernel_v0<T>, "gemm_v0 (Naive)", m, n, k, alpha, beta, d_A, d_B, d_C);
     benchmark_kernel(launch_gemm_cublas<T>, "cuBLAS Baseline", m, n, k, alpha, beta, d_A, d_B, d_C);
 
     CHECK_CUDA(cudaFree(d_A));
