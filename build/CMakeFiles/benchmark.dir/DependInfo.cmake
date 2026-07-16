@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/scratch/midway3/khanhnd/CUDA/kernels/gemm_cublas.cu" "CMakeFiles/benchmark.dir/kernels/gemm_cublas.cu.o" "gcc" "CMakeFiles/benchmark.dir/kernels/gemm_cublas.cu.o.d"
-  "/scratch/midway3/khanhnd/CUDA/kernels/gemm_v0.cu" "CMakeFiles/benchmark.dir/kernels/gemm_v0.cu.o" "gcc" "CMakeFiles/benchmark.dir/kernels/gemm_v0.cu.o.d"
-  "/scratch/midway3/khanhnd/CUDA/src/main.cu" "CMakeFiles/benchmark.dir/src/main.cu.o" "gcc" "CMakeFiles/benchmark.dir/src/main.cu.o.d"
+  "/home/khanhnd/CUDA-MatMul/kernels/gemm_cublas.cu" "CMakeFiles/benchmark.dir/kernels/gemm_cublas.cu.o" "gcc" "CMakeFiles/benchmark.dir/kernels/gemm_cublas.cu.o.d"
+  "/home/khanhnd/CUDA-MatMul/kernels/gemm_v0.cu" "CMakeFiles/benchmark.dir/kernels/gemm_v0.cu.o" "gcc" "CMakeFiles/benchmark.dir/kernels/gemm_v0.cu.o.d"
+  "/home/khanhnd/CUDA-MatMul/src/main.cu" "CMakeFiles/benchmark.dir/src/main.cu.o" "gcc" "CMakeFiles/benchmark.dir/src/main.cu.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

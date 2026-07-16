@@ -120,6 +120,7 @@ int main() {
     std::cout << "--------------------------------------------------------\n";
     
     benchmark_kernel(launch_gemm_kernel_v0<T>, "gemm_v0 (Naive)", m, n, k, alpha, beta, d_A, d_B, d_C);
+    
     benchmark_kernel(launch_gemm_cublas<T>, "cuBLAS Baseline", m, n, k, alpha, beta, d_A, d_B, d_C);
 
     CHECK_CUDA(cudaFree(d_A));
