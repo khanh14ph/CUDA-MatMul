@@ -1,3 +1,0 @@
-/home/khanhnd/CUDA-MatMul/build/CMakeFiles/benchmark.dir
-/home/khanhnd/CUDA-MatMul/build/CMakeFiles/edit_cache.dir
-/home/khanhnd/CUDA-MatMul/build/CMakeFiles/rebuild_cache.dir

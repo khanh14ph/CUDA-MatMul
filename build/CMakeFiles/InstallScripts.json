@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/khanhnd/CUDA-MatMul/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
