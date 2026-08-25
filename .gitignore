@@ -1,0 +1,51 @@
+# Build directories
+build/
+out/
+cmake-build-*/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+compile_commands.json
+CPackConfig.cmake
+CPackSourceConfig.cmake
+_deps/
+
+# Compiled objects and binaries
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# CUDA artifacts
+*.ptx
+*.cubin
+*.fatbin
+*.gpu
+*.i
+*.ii
+
+# Profiling
+*.nvprof
+*.nsys-rep
+*.ncu-rep
+*.qdrep
+*.sqlite
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
