@@ -53,6 +53,17 @@ cmake ..
 make -j
 ```
 
+### Rebuild after editing a kernel
+
+No need to re-run `cmake` — it only recompiles the files you changed and relinks:
+
+```bash
+cmake --build build && ./build/benchmark
+```
+
+Re-run `cmake` (the configure step) only when you change the build setup itself,
+e.g. adding a new `.cu` file to `add_executable(...)` in `CMakeLists.txt`.
+
 ## Run
 
 ```bash

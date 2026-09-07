@@ -15,6 +15,7 @@ include_directories(include)
 add_executable(benchmark
     src/main.cu
     kernels/gemm_v0.cu
+    kernels/gemm_v1.cu
     kernels/gemm_cublas.cu
 )
 

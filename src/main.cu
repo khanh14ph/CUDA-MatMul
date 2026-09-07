@@ -21,7 +21,7 @@ void cpu_gemm(size_t m, size_t n, size_t k, T alpha, T const* A, size_t lda,
 // Benchmarking Logic
 template <typename T>
 void benchmark_kernel(
-    void (*launch_kernel)(size_t, size_t, size_t, T const*, T const*, size_t, T const*, size_t, T const*, T*, size_t, cudaStream_t),
+    void (*launch_kernel)(int, int, int, T const*, T const*, int, T const*, int, T const*, T*, int, cudaStream_t),
     const char* kernel_name,
     size_t m, size_t n, size_t k,
     T alpha, T beta,
@@ -119,9 +119,10 @@ int main() {
     std::cout << "M=" << m << " N=" << n << " K=" << k << "\n";
     std::cout << "--------------------------------------------------------\n";
     
-    benchmark_kernel(launch_gemm_kernel_v0<T>, "gemm_v0 (Naive)", m, n, k, alpha, beta, d_A, d_B, d_C);
+    benchmark_kernel(launch_gemm_kernel_v0<T>, "gemm_v0", m, n, k, alpha, beta, d_A, d_B, d_C);
+    benchmark_kernel(launch_gemm_kernel_v1<T>, "gemm_v1 ", m, n, k, alpha, beta, d_A, d_B, d_C);
     
-    benchmark_kernel(launch_gemm_cublas<T>, "cuBLAS Baseline", m, n, k, alpha, beta, d_A, d_B, d_C);
+    benchmark_kernel(launch_gemm_cublas<T>, "cuBLAS", m, n, k, alpha, beta, d_A, d_B, d_C);
 
     CHECK_CUDA(cudaFree(d_A));
     CHECK_CUDA(cudaFree(d_B));

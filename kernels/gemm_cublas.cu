@@ -3,9 +3,9 @@
 #include <type_traits>
 
 template <typename T>
-void launch_gemm_cublas(size_t m, size_t n, size_t k, T const* alpha,
-                        T const* A, size_t lda, T const* B, size_t ldb,
-                        T const* beta, T* C, size_t ldc,
+void launch_gemm_cublas(int m, int n, int k, T const* alpha,
+                        T const* A, int lda, T const* B, int ldb,
+                        T const* beta, T* C, int ldc,
                         cudaStream_t stream)
 {
     static cublasHandle_t handle = nullptr;
@@ -24,5 +24,5 @@ void launch_gemm_cublas(size_t m, size_t n, size_t k, T const* alpha,
 }
 
 // Explicit template instantiation
-template void launch_gemm_cublas<float>(size_t, size_t, size_t, float const*, float const*, size_t, float const*, size_t, float const*, float*, size_t, cudaStream_t);
-template void launch_gemm_cublas<double>(size_t, size_t, size_t, double const*, double const*, size_t, double const*, size_t, double const*, double*, size_t, cudaStream_t);
+template void launch_gemm_cublas<float>(int, int, int, float const*, float const*, int, float const*, int, float const*, float*, int, cudaStream_t);
+template void launch_gemm_cublas<double>(int, int, int, double const*, double const*, int, double const*, int, double const*, double*, int, cudaStream_t);
