@@ -6,20 +6,19 @@ __global__ void gemm_v1(int m, int n, int k, T alpha, T const* A, int lda,
                         T const* B, int ldb, T beta, T* C, int ldc)
 {
     // Transposed thread mapping vs v0: x -> columns (n), y -> rows (m)
-    int const col{static_cast<int>(blockIdx.x * blockDim.x + threadIdx.x)};
-    int const row{static_cast<int>(blockIdx.y * blockDim.y + threadIdx.y)};
+    int const col = blockIdx.x * blockDim.x + threadIdx.x;
+    int const row = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (row < m && col < n)
     {
-        // 64-bit offsets computed once; everything else stays 32-bit
-        T const* A_row{A + static_cast<size_t>(row) * lda};
+        T const* A_row{A + row * lda};
         T const* B_col{B + col};
-        T* C_ptr{C + static_cast<size_t>(row) * ldc + col};
+        T* C_ptr{C + row * ldc + col};
 
-        T sum{static_cast<T>(0)};
+        T sum{0};
         for (int kk{0}; kk < k; ++kk)
         {
-            sum += A_row[kk] * B_col[static_cast<size_t>(kk) * ldb];
+            sum += A_row[kk] * B_col[kk * ldb];
         }
         *C_ptr = alpha * sum + beta * *C_ptr;
     }
@@ -33,8 +32,8 @@ void launch_gemm_kernel_v1(int m, int n, int k, T const* alpha, T const* A,
     dim3 const block_dim{32U, 32U, 1U};
     // x covers columns (n), y covers rows (m) to match the kernel's mapping
     dim3 const grid_dim{
-        (static_cast<unsigned int>(n) + block_dim.x - 1U) / block_dim.x,
-        (static_cast<unsigned int>(m) + block_dim.y - 1U) / block_dim.y, 1U};
+        (n + block_dim.x - 1U) / block_dim.x,
+        (m + block_dim.y - 1U) / block_dim.y, 1U};
 
     gemm_v1<T><<<grid_dim, block_dim, 0U, stream>>>(m, n, k, *alpha, A, lda, B,
                                                     ldb, *beta, C, ldc);

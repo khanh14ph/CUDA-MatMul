@@ -47,7 +47,7 @@
 template <typename T>
 void init_random_matrix(std::vector<T>& mat) {
     std::mt19937 gen(42); 
-    std::uniform_real_distribution<T> dist(static_cast<T>(-1.0), static_cast<T>(1.0));
+    std::uniform_real_distribution<T> dist(-1.0, 1.0);
     for (auto& val : mat) {
         val = dist(gen);
     }
@@ -55,7 +55,7 @@ void init_random_matrix(std::vector<T>& mat) {
 
 template <typename T>
 bool verify_results(const std::vector<T>& ref, const std::vector<T>& gpu, float tolerance = 1e-4) {
-    for (size_t i = 0; i < ref.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(ref.size()); ++i) {
         if (std::abs(ref[i] - gpu[i]) > tolerance) {
             std::cerr << "Mismatch at index " << i << ": CPU=" << ref[i] << ", GPU=" << gpu[i] << std::endl;
             return false;

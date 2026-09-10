@@ -5,12 +5,12 @@
 
 // CPU Reference Implementation for Correctness Checking
 template <typename T>
-void cpu_gemm(size_t m, size_t n, size_t k, T alpha, T const* A, size_t lda,
-              T const* B, size_t ldb, T beta, T* C, size_t ldc) {
-    for (size_t i = 0; i < m; ++i) {
-        for (size_t j = 0; j < n; ++j) {
+void cpu_gemm(int m, int n, int k, T alpha, T const* A, int lda,
+              T const* B, int ldb, T beta, T* C, int ldc) {
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < n; ++j) {
             T sum = 0;
-            for (size_t p = 0; p < k; ++p) {
+            for (int p = 0; p < k; ++p) {
                 sum += A[i * lda + p] * B[p * ldb + j];
             }
             C[i * ldc + j] = alpha * sum + beta * C[i * ldc + j];
@@ -18,12 +18,39 @@ void cpu_gemm(size_t m, size_t n, size_t k, T alpha, T const* A, size_t lda,
     }
 }
 
+// Correctness Check against CPU Reference
+template <typename T>
+bool verify_kernel(
+    void (*launch_kernel)(int, int, int, T const*, T const*, int, T const*, int, T const*, T*, int, cudaStream_t),
+    const char* kernel_name,
+    int m, int n, int k,
+    T alpha, T beta,
+    T const* d_A, T const* d_B, T* d_C,
+    std::vector<T> const& h_C_ref)
+{
+    std::cout << "Verifying " << kernel_name << " correctness...\n";
+
+    std::vector<T> h_C_gpu(m * n, 0.0f);
+    CHECK_CUDA(cudaMemset(d_C, 0, m * n * sizeof(T)));
+    launch_kernel(m, n, k, &alpha, d_A, k, d_B, n, &beta, d_C, n, nullptr);
+    CHECK_LAST_CUDA_ERROR();
+    CHECK_CUDA(cudaDeviceSynchronize());
+    CHECK_CUDA(cudaMemcpy(h_C_gpu.data(), d_C, m * n * sizeof(T), cudaMemcpyDeviceToHost));
+
+    if (verify_results(h_C_ref, h_C_gpu)) {
+        std::cout << "SUCCESS: " << kernel_name << " output matches CPU reference!\n";
+        return true;
+    }
+    std::cout << "FAILED: " << kernel_name << " output does not match CPU reference.\n";
+    return false;
+}
+
 // Benchmarking Logic
 template <typename T>
 void benchmark_kernel(
     void (*launch_kernel)(int, int, int, T const*, T const*, int, T const*, int, T const*, T*, int, cudaStream_t),
     const char* kernel_name,
-    size_t m, size_t n, size_t k,
+    int m, int n, int k,
     T alpha, T beta,
     T* d_A, T* d_B, T* d_C) 
 {
@@ -66,9 +93,9 @@ void benchmark_kernel(
 int main() {
     using T = float;
 
-    size_t m = 1024;
-    size_t n = 1024;
-    size_t k = 1024;
+    int m = 1024;
+    int n = 1024;
+    int k = 1024;
 
     T alpha = 1.0f;
     T beta = 0.0f;
@@ -78,7 +105,6 @@ int main() {
     std::vector<T> h_A(m * k);
     std::vector<T> h_B(k * n);
     std::vector<T> h_C_cpu_ref(m * n, 0.0f);
-    std::vector<T> h_C_gpu_res(m * n, 0.0f);
 
     init_random_matrix(h_A);
     init_random_matrix(h_B);
@@ -94,24 +120,17 @@ int main() {
     std::cout << "Running CPU Reference...\n";
     cpu_gemm(m, n, k, alpha, h_A.data(), k, h_B.data(), n, beta, h_C_cpu_ref.data(), n);
 
-    std::cout << "Verifying V0 Kernel correctness...\n";
-    CHECK_CUDA(cudaMemset(d_C, 0, m * n * sizeof(T))); 
-    launch_gemm_kernel_v0(m, n, k, &alpha, d_A, k, d_B, n, &beta, d_C, n, nullptr);
-    CHECK_CUDA(cudaDeviceSynchronize());
-    CHECK_CUDA(cudaMemcpy(h_C_gpu_res.data(), d_C, m * n * sizeof(T), cudaMemcpyDeviceToHost));
-    
-    if (!verify_results(h_C_cpu_ref, h_C_gpu_res)) return -1;
+    bool all_ok = true;
+    all_ok &= verify_kernel(launch_gemm_kernel_v0<T>, "gemm_v0", m, n, k, alpha, beta, d_A, d_B, d_C, h_C_cpu_ref);
+    all_ok &= verify_kernel(launch_gemm_kernel_v1<T>, "gemm_v1", m, n, k, alpha, beta, d_A, d_B, d_C, h_C_cpu_ref);
+    all_ok &= verify_kernel(launch_gemm_kernel_v2<T>, "gemm_v2", m, n, k, alpha, beta, d_A, d_B, d_C, h_C_cpu_ref);
+    all_ok &= verify_kernel(launch_gemm_kernel_v3<T>, "gemm_v3", m, n, k, alpha, beta, d_A, d_B, d_C, h_C_cpu_ref);
+    all_ok &= verify_kernel(launch_gemm_cublas<T>,    "cuBLAS",  m, n, k, alpha, beta, d_A, d_B, d_C, h_C_cpu_ref);
 
-    std::cout << "Verifying cuBLAS correctness...\n";
-    CHECK_CUDA(cudaMemset(d_C, 0, m * n * sizeof(T)));
-    launch_gemm_cublas(m, n, k, &alpha, d_A, k, d_B, n, &beta, d_C, n, nullptr);
-    CHECK_CUDA(cudaDeviceSynchronize());
-    CHECK_CUDA(cudaMemcpy(h_C_gpu_res.data(), d_C, m * n * sizeof(T), cudaMemcpyDeviceToHost));
-
-    if (verify_results(h_C_cpu_ref, h_C_gpu_res)) {
-        std::cout << "SUCCESS: cuBLAS output matches CPU reference!\n";
-    } else {
-        std::cout << "FAILED: cuBLAS output does not match CPU reference.\n";
+    if (!all_ok) {
+        CHECK_CUDA(cudaFree(d_A));
+        CHECK_CUDA(cudaFree(d_B));
+        CHECK_CUDA(cudaFree(d_C));
         return -1;
     }
 
@@ -121,7 +140,8 @@ int main() {
     
     benchmark_kernel(launch_gemm_kernel_v0<T>, "gemm_v0", m, n, k, alpha, beta, d_A, d_B, d_C);
     benchmark_kernel(launch_gemm_kernel_v1<T>, "gemm_v1 ", m, n, k, alpha, beta, d_A, d_B, d_C);
-    
+    benchmark_kernel(launch_gemm_kernel_v2<T>, "gemm_v2 ", m, n, k, alpha, beta, d_A, d_B, d_C);
+    benchmark_kernel(launch_gemm_kernel_v3<T>, "gemm_v3 ", m, n, k, alpha, beta, d_A, d_B, d_C);
     benchmark_kernel(launch_gemm_cublas<T>, "cuBLAS", m, n, k, alpha, beta, d_A, d_B, d_C);
 
     CHECK_CUDA(cudaFree(d_A));

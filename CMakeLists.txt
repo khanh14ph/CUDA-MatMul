@@ -16,6 +16,8 @@ add_executable(benchmark
     src/main.cu
     kernels/gemm_v0.cu
     kernels/gemm_v1.cu
+    kernels/gemm_v2.cu
+    kernels/gemm_v3.cu
     kernels/gemm_cublas.cu
 )
 

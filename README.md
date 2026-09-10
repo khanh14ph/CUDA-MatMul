@@ -64,6 +64,10 @@ cmake --build build && ./build/benchmark
 Re-run `cmake` (the configure step) only when you change the build setup itself,
 e.g. adding a new `.cu` file to `add_executable(...)` in `CMakeLists.txt`.
 
+```
+nvcc -std=c++17 -Iinclude -c kernels/gemm_v2.cu -o /dev/null
+```
+
 ## Run
 
 ```bash
